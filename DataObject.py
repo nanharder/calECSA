@@ -48,8 +48,18 @@ class Engine(object):
     def load_data(self):
         with open(self.file_source, 'r+', encoding='utf-8') as f:
             nums = [i[:-1].split(self.separator) for i in f.readlines()]
-        x = [float(i[0].strip()) for i in nums]
-        y = [float(i[1].strip()) for i in nums]
+        index = 0
+        while index < len(nums):
+            if len(nums[index]) == 2:
+                try:
+                    float(nums[index][0].strip())
+                    float(nums[index][1].strip())
+                    break
+                except ValueError as e:
+                    pass
+            index += 1
+        x = [float(i[0].strip()) for i in nums[index:]]
+        y = [float(i[1].strip()) for i in nums[index:]]
         step = x[1] - x[0]
         if step > 0:
             num = int((max(x) - x[0]) / step + 1)

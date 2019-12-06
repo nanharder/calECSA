@@ -4,6 +4,7 @@
 from tkinter import *
 from tkinter.filedialog import askopenfilename
 import tkinter.messagebox as mb
+
 import os
 from DataObject import *
 import figure
@@ -34,6 +35,7 @@ def widget_main(win, root):
         nonlocal frame_fig
         filepath = path.get()
         engine.clear()
+        result.delete(1.0, END)
         engine.set_filepath(filepath)
         if filepath is None or len(filepath) == 0:
             mb.showerror("提示：路径不能为空")
@@ -46,7 +48,7 @@ def widget_main(win, root):
             right_bound.set(str(engine.get_xmax()))
             left_peak.set(str(engine.get_xmin()))
             right_peak.set(str(engine.get_xmax()))
-            level.set(str(1))
+            level.set(str(5))
             formula.set(engine.get_formula())
 
             frame_init()
