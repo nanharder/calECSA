@@ -64,7 +64,7 @@ class Engine(object):
         if step > 0:
             num = int((max(x) - x[0]) / step + 1)
         else:
-            num = int((x[0] - min(x)) / step + 1)
+            num = int((x[0] - min(x)) / abs(step) + 1)
         self.raw_data.set_cols(x[:num], y[:num])
 
     def set_bound(self, l_bound, r_bound, l_peak, r_peak):

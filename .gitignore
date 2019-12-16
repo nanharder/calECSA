@@ -3,3 +3,6 @@ dist
 main.spec
 test.txt
 __pycache__
+venv
+calEcsa.zip
+.idea/
