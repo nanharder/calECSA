@@ -11,6 +11,7 @@ class Engine(object):
         self.left_peak = -1
         self.right_peak = -1
 
+        self.all_data = []
         self.raw_data = Pair()
         self.peak_data = Pair()
         self.bg_data = Pair()
@@ -26,6 +27,7 @@ class Engine(object):
         self.left_peak = -1
         self.right_peak = -1
 
+        self.all_data = []
         self.raw_data = Pair()
         self.peak_data = Pair()
         self.bg_data = Pair()
@@ -60,12 +62,32 @@ class Engine(object):
             index += 1
         x = [float(i[0].strip()) for i in nums[index:]]
         y = [float(i[1].strip()) for i in nums[index:]]
-        step = x[1] - x[0]
-        if step > 0:
-            num = int((max(x) - x[0]) / step + 1)
+        min_x = min(x)
+        max_x = max(x)
+        left = 0
+        right = 1
+        while right < len(x):
+            if x[right] == min_x or x[right] == max_x:
+                pair = Pair()
+                pair.set_cols(x[left:right], y[left:right])
+                self.all_data.append(pair)
+                left = right
+            right += 1
+
+        # 如果还有多余数据也要加入进来
+        if right - left > 1:
+            pair = Pair()
+            pair.set_cols(x[left:right], y[left:right])
+            self.all_data.append(pair)
+        self.raw_data = self.all_data[0]
+
+    def set_raw_index(self, index):
+        tar = index - 1
+        if tar < 0 or tar > len(self.all_data):
+            return False
         else:
-            num = int((x[0] - min(x)) / abs(step) + 1)
-        self.raw_data.set_cols(x[:num], y[:num])
+            self.raw_data = self.all_data[tar]
+            return True
 
     def set_bound(self, l_bound, r_bound, l_peak, r_peak):
         self.left_peak = l_peak
@@ -91,7 +113,13 @@ class Engine(object):
         return x_back, y_back, x_peak, y_peak
 
     def optimize_bg(self, level):
-        parameter = polyfit(self.bg_data.get_xcol(), self.bg_data.get_ycol(), level)
+        return self.bg_helper(self.bg_data.get_xcol(), self.bg_data.get_ycol(), level)
+
+    def optimize_line(self, x1, y1, x2, y2):
+        return self.bg_helper([x1, x2], [y1, y2], 1)
+
+    def bg_helper(self, x_bg, y_bg, level):
+        parameter = polyfit(x_bg, y_bg, level)
         func = poly1d(parameter)
         x_peak = self.peak_data.get_xcol()
         x_opt = arange(x_peak[0], x_peak[-1], x_peak[1] - x_peak[0])
@@ -99,6 +127,9 @@ class Engine(object):
         self.bg_curve.set_cols(x_opt, y_opt)
 
         return self.bg_data.get_cols() + self.peak_data.get_cols() + self.bg_curve.get_cols()
+
+    def get_all_data_size(self):
+        return len(self.all_data)
 
     def get_raw(self):
         return self.raw_data
@@ -108,6 +139,7 @@ class Engine(object):
 
     def set_formula(self, formula):
         self.formula = formula
+
 
     def integrate(self):
         if self.peak_data.size() == 0 or self.bg_curve.size() == 0:
