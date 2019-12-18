@@ -12,6 +12,7 @@ class Engine(object):
         self.right_peak = -1
 
         self.all_data = []
+        self.raw_data_index = 0
         self.raw_data = Pair()
         self.peak_data = Pair()
         self.bg_data = Pair()
@@ -28,6 +29,7 @@ class Engine(object):
         self.right_peak = -1
 
         self.all_data = []
+        self.raw_data_index = 0
         self.raw_data = Pair()
         self.peak_data = Pair()
         self.bg_data = Pair()
@@ -79,13 +81,14 @@ class Engine(object):
             pair = Pair()
             pair.set_cols(x[left:right], y[left:right])
             self.all_data.append(pair)
-        self.raw_data = self.all_data[0]
+        self.raw_data = self.all_data[self.raw_data_index]
 
     def set_raw_index(self, index):
         tar = index - 1
         if tar < 0 or tar > len(self.all_data):
             return False
         else:
+            self.raw_data_index = tar
             self.raw_data = self.all_data[tar]
             return True
 
@@ -128,18 +131,34 @@ class Engine(object):
 
         return self.bg_data.get_cols() + self.peak_data.get_cols() + self.bg_curve.get_cols()
 
+    def output(self, writer):
+        index = self.get_raw_index() // 2
+        cv1 = self.all_data[index * 2]
+        cv2 = self.all_data[index * 2 + 1]
+
+        out_x = cv1.get_xcol() + cv2.get_xcol()
+        out_y = cv1.get_ycol() + cv2.get_ycol()
+
+        i = 0
+        while i < len(out_x):
+            writer.write('%g, %g\n' % (out_x[i], out_y[i]))
+            i += 1
+        writer.close()
+
     def get_all_data_size(self):
         return len(self.all_data)
 
     def get_raw(self):
         return self.raw_data
 
+    def get_raw_index(self):
+        return self.raw_data_index
+
     def get_formula(self):
         return self.formula
 
     def set_formula(self, formula):
         self.formula = formula
-
 
     def integrate(self):
         if self.peak_data.size() == 0 or self.bg_curve.size() == 0:
