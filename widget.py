@@ -51,7 +51,7 @@ def widget_main(win, root):
             plot.pre_all_data(axs, engine.get_add_data(), 1)
             result.delete(1.0, END)
             result.insert(END, "加载数据完毕,共有%d个周期,当前显示的是第%d个周期" %
-                          (engine.get_all_data_size(), engine.get_raw_index() + 1))
+                          (engine.get_all_data_size(), 1))
 
     def pre_select_data():
         try:
@@ -61,8 +61,8 @@ def widget_main(win, root):
                 axs = figure.plot(frame_fig)
                 plot.pre_all_data(axs, engine.get_add_data(), index)
                 result.delete(1.0, END)
-                result.insert(END, "加载数据完毕,共有%d个周期,当前显示的是第%d个周期" %
-                              (engine.get_all_data_size(), engine.get_raw_index() + 1))
+                result.insert(END, "加载数据完毕,共有%d个周期,当前红色曲线是第%d个周期" %
+                              (engine.get_all_data_size(), index))
             else:
                 mb.showerror("输入的值不在周期范围内")
 
