@@ -81,7 +81,7 @@ class Engine(object):
             pair = Pair()
             pair.set_cols(x[left:right], y[left:right])
             self.all_data.append(pair)
-        self.raw_data = self.all_data[self.raw_data_index]
+        # self.raw_data = self.all_data[self.raw_data_index]
 
     def set_raw_index(self, index):
         tar = index - 1
@@ -144,6 +144,9 @@ class Engine(object):
             writer.write('%g, %g\n' % (out_x[i], out_y[i]))
             i += 1
         writer.close()
+
+    def get_add_data(self):
+        return self.all_data
 
     def get_all_data_size(self):
         return len(self.all_data)

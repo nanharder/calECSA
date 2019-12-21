@@ -45,31 +45,48 @@ def widget_main(win, root):
             engine.load_data()
 
             data_index.set(str(1))
-            left_bound.set(str(engine.get_xmin()))
-            right_bound.set(str(engine.get_xmax()))
-            left_peak.set(str(engine.get_xmin()))
-            right_peak.set(str(engine.get_xmax()))
-            level.set(str(5))
-            formula.set(engine.get_formula())
-
             frame_init()
             axs = figure.plot(frame_fig)
-            plot.raw_plot(axs, engine.get_raw())
+            # plot.raw_plot(axs, engine.get_raw())
+            plot.pre_all_data(axs, engine.get_add_data(), 1)
             result.delete(1.0, END)
             result.insert(END, "加载数据完毕,共有%d个周期,当前显示的是第%d个周期" %
                           (engine.get_all_data_size(), engine.get_raw_index() + 1))
+
+    def pre_select_data():
+        try:
+            index = int(data_index.get())
+            if 0 < index <= engine.get_all_data_size():
+                frame_init()
+                axs = figure.plot(frame_fig)
+                plot.pre_all_data(axs, engine.get_add_data(), index)
+                result.delete(1.0, END)
+                result.insert(END, "加载数据完毕,共有%d个周期,当前显示的是第%d个周期" %
+                              (engine.get_all_data_size(), engine.get_raw_index() + 1))
+            else:
+                mb.showerror("输入的值不在周期范围内")
+
+        except ValueError:
+            mb.showerror("请输入正确格式的值")
 
     def select_data():
         try:
             index = int(data_index.get())
             res = engine.set_raw_index(index)
+
             if res:
+                left_bound.set(str(engine.get_xmin()))
+                right_bound.set(str(engine.get_xmax()))
+                left_peak.set(str(engine.get_xmin()))
+                right_peak.set(str(engine.get_xmax()))
+                level.set(str(5))
+                formula.set(engine.get_formula())
                 reset_fig()
                 result.delete(1.0, END)
                 result.insert(END, "加载数据完毕,共有%d个周期,当前显示的是第%d个周期" %
                               (engine.get_all_data_size(), engine.get_raw_index() + 1))
             else:
-                mb.showerror("输入的值大于周期范围")
+                mb.showerror("输入的值不在周期范围内")
 
         except ValueError:
             mb.showerror("请输入正确格式的值")
@@ -141,18 +158,22 @@ def widget_main(win, root):
     def test():
         result.insert(END, "%s \n" % (win.winfo_geometry()))
 
+    def egg(event):
+        mb.showinfo("Surprise!", "Author:Nan Hang\n"
+                                 "Github:https://github.com/nanharder/calECSA")
+
     # -------------控件区----------------
 
     """
     加载数据并显示原始数据图像
     """
     label = Label(root, text="请选择原始数据文件:")
-    label.place(relx=0.1, rely=0.05, relheight=0.03)
+    label.place(relx=0.1, rely=0.05, relheight=0.035)
 
     engine = Engine()
     path = StringVar()
     entry = Entry(root, textvariable=path)
-    entry.place(relx=0.1, rely=0.1, relwidth=0.8)
+    entry.place(relx=0.1, rely=0.1, relwidth=0.8, relheight=0.038)
     button = Button(root, text="文件选择", cursor="hand2", command=select_path)
     button.place(relx=0.1, rely=0.15, relwidth=0.2)
 
@@ -163,12 +184,15 @@ def widget_main(win, root):
     btn_reset.place(relx=0.7, rely=0.15, relwidth=0.2)
 
     data_index = StringVar()
-    Label(root, text=" 数据周期编号:").place(relx=0.1, rely=0.2225, relheight=0.03)
+    Label(root, text=" 数据周期编号:").place(relx=0.1, rely=0.2225, relheight=0.038)
     entry_index = Entry(root, textvariable=data_index)
-    entry_index.place(relx=0.3, rely=0.225, relwidth=0.15)
+    entry_index.place(relx=0.3, rely=0.225, relwidth=0.08, relheight=0.038)
+
+    btn_pre_select = Button(root, text="预览数据", cursor="hand2", command=pre_select_data)
+    btn_pre_select.place(relx=0.4, rely=0.225, relwidth=0.2)
 
     btn_select_data = Button(root, text="选择数据", cursor="hand2", command=select_data)
-    btn_select_data.place(relx=0.5, rely=0.225, relwidth=0.2)
+    btn_select_data.place(relx=0.7, rely=0.225, relwidth=0.2)
 
     """
     设置取点范围
@@ -178,27 +202,27 @@ def widget_main(win, root):
     left_peak = StringVar()
     right_peak = StringVar()
 
-    Label(root, text=" 背景左边界:").place(relx=0.1, rely=0.3, relheight=0.03)
+    Label(root, text=" 背景左边界:").place(relx=0.1, rely=0.3, relheight=0.038)
     entry1 = Entry(root, textvariable=left_bound)
-    entry1.place(relx=0.3, rely=0.3, relwidth=0.15)
-    Label(root, text=" 背景右边界:").place(relx=0.55, rely=0.3, relheight=0.03)
+    entry1.place(relx=0.3, rely=0.3, relwidth=0.15, relheight=0.038)
+    Label(root, text=" 背景右边界:").place(relx=0.55, rely=0.3, relheight=0.038)
     entry2 = Entry(root, textvariable=right_bound)
-    entry2.place(relx=0.75, rely=0.3, relwidth=0.15)
+    entry2.place(relx=0.75, rely=0.3, relwidth=0.15, relheight=0.038)
 
-    Label(root, text=" 积分峰左边界:").place(relx=0.1, rely=0.35, relheight=0.03)
+    Label(root, text=" 积分峰左边界:").place(relx=0.1, rely=0.35, relheight=0.038)
     entry3 = Entry(root, textvariable=left_peak)
-    entry3.place(relx=0.3, rely=0.35, relwidth=0.15)
-    Label(root, text=" 积分峰右边界:").place(relx=0.55, rely=0.35, relheight=0.03)
+    entry3.place(relx=0.3, rely=0.35, relwidth=0.15, relheight=0.038)
+    Label(root, text=" 积分峰右边界:").place(relx=0.55, rely=0.35, relheight=0.038)
     entry4 = Entry(root, textvariable=right_peak)
-    entry4.place(relx=0.75, rely=0.35, relwidth=0.15)
+    entry4.place(relx=0.75, rely=0.35, relwidth=0.15, relheight=0.038)
 
     btn_pre = Button(root, text="应用边界", cursor="hand2", command=set_bound)
-    btn_pre.place(relx=0.1, rely=0.4, relwidth=0.2)
+    btn_pre.place(relx=0.1, rely=0.41, relwidth=0.2)
 
     level = StringVar()
-    Label(root, text=" 背景曲线拟合级数:").place(relx=0.1, rely=0.5, relheight=0.03)
+    Label(root, text=" 背景曲线拟合级数:").place(relx=0.1, rely=0.5, relheight=0.038)
     entry5 = Entry(root, textvariable=level)
-    entry5.place(relx=0.35, rely=0.5, relwidth=0.13)
+    entry5.place(relx=0.35, rely=0.5, relwidth=0.13, relheight=0.038)
 
     btn_optimize = Button(root, text="拟合背景", cursor="hand2", command=optimize_cur)
     btn_optimize.place(relx=0.6, rely=0.5, relwidth=0.2)
@@ -208,27 +232,27 @@ def widget_main(win, root):
     x2 = StringVar()
     y2 = StringVar()
 
-    Label(root, text=" x1:").place(relx=0.1, rely=0.55, relheight=0.03)
+    Label(root, text=" x1:").place(relx=0.1, rely=0.55, relheight=0.038)
     entry6 = Entry(root, textvariable=x1)
-    entry6.place(relx=0.18, rely=0.55, relwidth=0.1)
-    Label(root, text=" y1:").place(relx=0.3, rely=0.55, relheight=0.03)
+    entry6.place(relx=0.18, rely=0.55, relwidth=0.1, relheight=0.038)
+    Label(root, text=" y1:").place(relx=0.3, rely=0.55, relheight=0.038)
     entry7 = Entry(root, textvariable=y1)
-    entry7.place(relx=0.38, rely=0.55, relwidth=0.1)
+    entry7.place(relx=0.38, rely=0.55, relwidth=0.1, relheight=0.038)
 
-    Label(root, text=" x2:").place(relx=0.1, rely=0.6, relheight=0.03)
+    Label(root, text=" x2:").place(relx=0.1, rely=0.6, relheight=0.038)
     entry8 = Entry(root, textvariable=x2)
-    entry8.place(relx=0.18, rely=0.6, relwidth=0.1)
-    Label(root, text=" y2:").place(relx=0.3, rely=0.6, relheight=0.03)
+    entry8.place(relx=0.18, rely=0.6, relwidth=0.1, relheight=0.038)
+    Label(root, text=" y2:").place(relx=0.3, rely=0.6, relheight=0.038)
     entry9 = Entry(root, textvariable=y2)
-    entry9.place(relx=0.38, rely=0.6, relwidth=0.1)
+    entry9.place(relx=0.38, rely=0.6, relwidth=0.1, relheight=0.038)
 
     btn_select_data = Button(root, text="直线背景", cursor="hand2", command=line_background)
     btn_select_data.place(relx=0.6, rely=0.575, relwidth=0.2)
 
     formula = StringVar()
-    Label(root, text=" 积分结果处理:").place(relx=0.1, rely=0.65, relheight=0.03)
+    Label(root, text=" 积分结果处理:").place(relx=0.1, rely=0.65, relheight=0.038)
     entry10 = Entry(root, textvariable=formula)
-    entry10.place(relx=0.3, rely=0.65, relwidth=0.35)
+    entry10.place(relx=0.3, rely=0.65, relwidth=0.35, relheight=0.038)
     btn_inter = Button(root, text="积分", cursor="hand2", command=intergrate)
     btn_inter.place(relx=0.7, rely=0.65, relwidth=0.2)
 
@@ -242,3 +266,6 @@ def widget_main(win, root):
     test = Button(root, text="输出窗体大小", command=test)
     test.place(relx=0.1, rely=0.92)
     '''
+
+    # 彩蛋环节
+    win.bind("<Control-n>", egg)

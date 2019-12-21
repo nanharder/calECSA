@@ -21,7 +21,7 @@ def raw_plot(plt, raw_data):
 
     bounds = get_bound(x_col, y_col)
 
-    plt.scatter(raw_data.get_xcol(), raw_data.get_ycol(), 10, 'red')
+    plt.scatter(x_col, y_col, 10, 'red')
     plt.set_xlim(bounds[0], bounds[1])
     plt.set_ylim(bounds[2], bounds[3])
 
@@ -39,3 +39,21 @@ def pre_plot(plt, data):
 def cur_plot(plt, data):
     pre_plot(plt, data)
     plt.plot(data[4], data[5], "r--", color="blue")
+
+
+def pre_all_data(plt, all_data, index):
+    all_x = []
+    all_y = []
+    for i in range(len(all_data)):
+        x_col = all_data[i].get_xcol()
+        y_col = all_data[i].get_ycol()
+        all_x += x_col
+        all_y += y_col
+        if i == index - 1:
+            plt.scatter(x_col, y_col, 10, 'red')
+        else:
+            plt.scatter(x_col, y_col, 10, 'black')
+
+    bounds = get_bound(all_x, all_y)
+    plt.set_xlim(bounds[0], bounds[1])
+    plt.set_ylim(bounds[2], bounds[3])
