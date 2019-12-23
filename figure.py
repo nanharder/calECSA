@@ -18,5 +18,5 @@ def plot(root):
     toolbar.update()
     canvas.get_tk_widget().pack()
 
-    # 返回画布对象
-    return axs
+    # 返回fig和画布对象
+    return fig, axs
